@@ -4,20 +4,44 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Form from './modules/Form'
 import Dashboard from './modules/Dashboard'
+import {Routes,Route,Navigate} from 'react-router-dom'
+const ProtectedRoute=({children})=>{
+  const isLoggedIn =localStorage.getItem('user:token') !==null ||true;
+if (!isLoggedIn) {
+  return <Navigate to={'/users/sign_in'} />
+} 
+else if (
+  isLoggedIn &&
+  ['/users/sign_in', '/users/sign_up'].includes(window.location.pathname)
+) {
+  console.log('object ::>> ')
+  return <Navigate to={'/'} />
+}
+
+return children
+}
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  return(
+  <Routes>
+  <Route path='/' element={
+      <ProtectedRoute>
+        <Dashboard />
+      </ProtectedRoute>
+    }/>
+  <Route path='/users/sign_in' element={
+      <ProtectedRoute>
+        <Form isSignInPage={true} />
+      </ProtectedRoute>
+    }/>
 
-  return (
-    <>
-    <div className="bg-[#B7DFE8] h-screen flex justify-center items-center">
-    
-    
-      {/* <Form/> */}
-      <Dashboard/>
-      
-    </div>
-    </>
+  <Route path='/users/sign_up' element={
+      <ProtectedRoute>
+        <Form isSignInPage={false} />
+      </ProtectedRoute>
+    }/>
+</Routes>
   )
 }
 
